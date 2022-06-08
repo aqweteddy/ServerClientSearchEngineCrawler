@@ -9,7 +9,7 @@ NTU HPC 2022 Final Project
 
 ```bash
 git clone https://github.com/aqweteddy/ServerClientSearchEngineCrawler.git
-conda actiavate <env name>
+conda activate <env name>
 pip install -r requirements.txt
 ```
 
@@ -41,3 +41,4 @@ python client.py --cli_id cli1
 ## TODO
 
 [] database
+[] mutex lock

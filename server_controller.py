@@ -16,23 +16,34 @@ class UrlItem:
 
 
 class ClientQueue:
-    def __init__(self, cli_id: str) -> None:
+    def __init__(self, cli_id: str, heap_max_size: int=100000) -> None:
         self.cli_id = cli_id
+        self.heap_max_size = heap_max_size
         self.cms = CountMinSketch()
         self.url_queue = []
+        self.cold_queue = []
 
     def count_domain(self, domain: str):
         return self.cms.query(domain)
 
     def add(self, url: str, domain: str, weight: int):
         self.cms.add(domain)
-        heapq.heappush(self.url_queue, UrlItem(url, weight))
+
+        if len(self.url_queue) > self.heap_max_size:
+            self.cold_queue.append(url)
+        else:
+            heapq.heappush(self.url_queue, UrlItem(url, weight))
 
     def get_urls(self, nums: int):
         urls = []
         for _ in range(min(nums, len(self.url_queue))):
             url_item = heapq.heappop(self.url_queue)
             urls.append(url_item.url)
+        
+        while len(self.url_queue) < self.heap_max_size and len(self.cold_queue) > 0:
+            heapq.heappush(self.url_queue, self.cold_queue[0])
+            self.cold_queue.pop(0)
+        
         return urls
 
     def __len__(self):

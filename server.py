@@ -1,6 +1,5 @@
 from typing import Optional, List, Dict
-from urllib.request import Request
-
+import time
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -13,7 +12,7 @@ SEEDS_URLS = [
     "https://www.gamer.com.tw/"
 ]
 controller = ServerController(SEEDS_URLS, "")
-
+start_time = time.time()
 
 class CrawledPages(BaseModel):
     pages: List[Dict[str, str]]
@@ -59,7 +58,8 @@ def url_in_queue():
 def url_in_queue():
     return {
         "status": "ok",
-        "nums": controller.crawled_num
+        "nums": controller.crawled_num,
+        "times": time.time() - start_time
     }
 
 @app.post('/save/{cli_id}')  # save crawled webpage
