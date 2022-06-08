@@ -61,7 +61,7 @@ class ServerController:
         self.db_url: str = db_url
         self.clients_que: Dict[str, ClientQueue] = {}
         self.init_urls = init_urls
-        self.bf = BloomFilter(max_elements=10**10, error_rate=0.01)
+        self.bf = BloomFilter(max_elements=10**8, error_rate=0.01)
         self.tmp_result = []
         self.crawled_num = 0
 
