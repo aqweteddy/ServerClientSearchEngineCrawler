@@ -2,7 +2,6 @@ from typing import Optional, List, Dict
 import time
 from fastapi import FastAPI
 from pydantic import BaseModel
-
 from server_controller import ServerController
 
 app = FastAPI()
@@ -43,19 +42,20 @@ def fetch_url(cli_id: str, num: int):
 
 
 @app.get('/client-num')  # numbers of clients
-def url_in_queue():
+def client_num():
     return {"status": "ok", "nums": len(controller.clients_que)}
 
 
 @app.get('/url-in-queue-num')  # numbers of urls in queue
 def url_in_queue():
+    num = sum(map(lambda x: len(x), controller.clients_que))
     return {
         "status": "ok",
-        "nums": sum(map(lambda x: len(x), controller.clients_que))
+        "nums": num
     }
 
 @app.get('/crawled-url-num')  # numbers of urls in queue
-def url_in_queue():
+def crawled_url_num():
     return {
         "status": "ok",
         "nums": controller.crawled_num,

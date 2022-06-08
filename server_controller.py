@@ -30,7 +30,7 @@ class ClientQueue:
         self.cms.add(domain)
 
         if len(self.url_queue) > self.heap_max_size:
-            self.cold_queue.append(url)
+            self.cold_queue.append(UrlItem(url, weight))
         else:
             heapq.heappush(self.url_queue, UrlItem(url, weight))
 

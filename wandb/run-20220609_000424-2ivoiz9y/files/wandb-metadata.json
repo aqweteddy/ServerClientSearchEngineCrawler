@@ -1,0 +1,24 @@
+{
+    "os": "Linux-5.4.0-91-generic-x86_64-with-glibc2.31",
+    "python": "3.9.12",
+    "heartbeatAt": "2022-06-08T16:04:26.980606",
+    "startedAt": "2022-06-08T16:04:24.825716",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 2080 Ti",
+    "gpu_count": 1,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/user/homework/HPC/ServerClientSpider/monitor.py",
+    "codePath": "monitor.py",
+    "git": {
+        "remote": "https://github.com/aqweteddy/ServerClientSearchEngineCrawler.git",
+        "commit": "92d7441978460dc6d54f3a4e84646dfc24b562b8"
+    },
+    "email": "keddy940199@gmail.com",
+    "root": "/home/user/homework/HPC/ServerClientSpider",
+    "host": "user-Z490-UD",
+    "username": "user",
+    "executable": "/home/user/miniconda3/envs/spider/bin/python"
+}

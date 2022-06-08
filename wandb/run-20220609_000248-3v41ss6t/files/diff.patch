@@ -1,0 +1,49 @@
+diff --git a/server.py b/server.py
+index b5150f3..7d477cf 100644
+--- a/server.py
++++ b/server.py
+@@ -2,7 +2,6 @@ from typing import Optional, List, Dict
+ import time
+ from fastapi import FastAPI
+ from pydantic import BaseModel
+-
+ from server_controller import ServerController
+ 
+ app = FastAPI()
+@@ -43,19 +42,20 @@ def fetch_url(cli_id: str, num: int):
+ 
+ 
+ @app.get('/client-num')  # numbers of clients
+-def url_in_queue():
++def client_num():
+     return {"status": "ok", "nums": len(controller.clients_que)}
+ 
+ 
+ @app.get('/url-in-queue-num')  # numbers of urls in queue
+ def url_in_queue():
++    num = sum(map(lambda x: len(x), controller.clients_que))
+     return {
+         "status": "ok",
+-        "nums": sum(map(lambda x: len(x), controller.clients_que))
++        "nums": num
+     }
+ 
+ @app.get('/crawled-url-num')  # numbers of urls in queue
+-def url_in_queue():
++def crawled_url_num():
+     return {
+         "status": "ok",
+         "nums": controller.crawled_num,
+diff --git a/server_controller.py b/server_controller.py
+index b96bcef..d2a96fd 100644
+--- a/server_controller.py
++++ b/server_controller.py
+@@ -30,7 +30,7 @@ class ClientQueue:
+         self.cms.add(domain)
+ 
+         if len(self.url_queue) > self.heap_max_size:
+-            self.cold_queue.append(url)
++            self.cold_queue.append(UrlItem(url, weight))
+         else:
+             heapq.heappush(self.url_queue, UrlItem(url, weight))
+ 

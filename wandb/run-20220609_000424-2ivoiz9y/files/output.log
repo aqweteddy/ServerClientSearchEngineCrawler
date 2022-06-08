@@ -1,0 +1,6 @@
+
+http://localhost:8087/url-in-queue-num
+Traceback (most recent call last):
+  File "/home/user/homework/HPC/ServerClientSpider/monitor.py", line 9, in <module>
+    wandb.log({'url-in-queue-num': requests.get(urljoin(SERVER, '/url-in-queue-num')['nums']),
+TypeError: string indices must be integers
