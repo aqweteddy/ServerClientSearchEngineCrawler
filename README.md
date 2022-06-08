@@ -1,11 +1,14 @@
-# Server Client Spider
+# Server Client Search Engine Crawler
+
+NTU HPC 2022 Final Project
 
 * server: 負責分配URL、接收資料
 * client: 從server 拿到 url 後爬取網站，回傳蒐集到的網站內容和URL 給server
 
-## installation
+## Installation
 
 ```bash
+git clone https://github.com/aqweteddy/ServerClientSearchEngineCrawler.git
 conda actiavate <env name>
 pip install -r requirements.txt
 ```
