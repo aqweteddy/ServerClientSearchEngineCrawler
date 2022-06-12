@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from utils.parser import HtmlParser
+from utils.parser3 import HtmlParser
 from typing import List
 from urllib.parse import urlencode, urljoin
 

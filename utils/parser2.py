@@ -29,8 +29,14 @@ class HtmlParser:
                     self.urls.append(href)
         
             if node.tag in ['a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'span', 'div']:
-                result = f'{node.text if node.text else ""}{self.__extract_all_children(node)}{node.tail if node.tail else ""}'
-                self.text.append(self.remove_space(result))
+                #result = f'{node.text if node.text else ""}{self.__extract_all_children(node)}{node.tail if node.tail else ""}'
+                
+                #self.text.append(self.remove_space(result))
+
+                result = f'{node.text if node.text else ""}{node.tail if node.tail else ""}'
+                if len(result)>0:
+                    self.text.append(self.remove_space(result))
+                self.text  += self.__extract_all_children(node)
                 continue
             self.__travel(node)
 
@@ -38,11 +44,19 @@ class HtmlParser:
         return re.sub(self.re_pattern, ' ', text)
 
     def __extract_all_children(self, now):
-        tmp = ''
+        tmp = []
         for node in now:
+            if node.tag == 'script':
+                continue
             if node.tag == 'a':
                 self.urls.append(node.get('href'))
-            tmp += node.text if node.text else '' + node.tail if node.tail else ''
+            text = ''
+            if node.text:
+                text += node.text
+            if node.tail:
+                text += node.tail
+            if len(text)>0:
+                tmp.append (self.remove_space(text))
             try:
                 tmp += self.__extract_all_children(node)
             except RecursionError:
@@ -57,29 +71,36 @@ class HtmlParser:
     
     def get_main_content(self):
         full_text = ''
+        """
         for t in self.text:
             if len(t) > len(full_text):
                 full_text = t  
-        rule = re.compile(r"[^a-zA-Z0-9\u4e00-\u9fa5]")
-
-        sentences = rule.split(full_text)
-
+        """
+        #rule = re.compile(r"[^a-zA-Z0-9\u4e00-\u9fa5]")
+        #sentences = rule.split(full_text)
+        sentences = self.text
         word_dict={}
         word_list=[]
         frequency_list = np.zeros(len(sentences))
         for i, sentence in enumerate(sentences):
             words = jieba.lcut(sentence)
             word_list.append(words)
-            for i in words:
+            for w in words:
                 try:
-                    word_dict[i]+=1
+                    word_dict[w]+=1
                 except:
-                    word_dict[i]=1
-        """
-        for i in word_dict.keys():
-            if word_dict[i]>10:
-                print(i,word_dict[i])
-        """
+                    word_dict[w]=1
+        
+        word_score_list = np.zeros(len(word_dict.keys()))
+        
+        for i,t in enumerate(word_dict.keys()):
+            word_score_list[i] = word_dict[t]
+        
+        median = np.sort(word_score_list)[int(len(word_score_list)/2)]
+
+        for i,t in enumerate(word_dict.keys()):
+            if word_dict[t]>median:
+                word_dict[t]=median
 
         for i, words in enumerate(word_list):
             for j in words:
@@ -107,7 +128,11 @@ class HtmlParser:
 
 
 if __name__ == '__main__':
-    with open('test3.html', 'r') as f:
+    with open('stackoverflow.html', 'r') as f:
         html = f.read()
     parser = HtmlParser(html)
-    print(parser.get_main_content())
+    content_list = parser.get_main_content()
+
+    for i,t in enumerate(content_list):
+        print(t)
+
