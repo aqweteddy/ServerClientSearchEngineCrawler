@@ -9,7 +9,7 @@ class PageItem:
     domain: str = None
     title: str = None
     depth_from_root: int = None
-    a: List[str] = None
+    a: List[str] = []
     ip: str = None
 
     def __iter__(self):

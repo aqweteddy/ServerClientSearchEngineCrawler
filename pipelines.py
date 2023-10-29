@@ -1,14 +1,15 @@
 import asyncio
 import json
 import logging
-from utils.parser import HtmlParser
+# from utils.parser import HtmlParser
 from typing import List
 from urllib.parse import urlencode, urljoin
 
-import aiohttp
+import aiohttp, re
 
 from item import PageItem, ResponseItem
 from utils.function import get_domain
+import trafilatura
 
 
 class PipelineBase:
@@ -64,23 +65,34 @@ class PipelineBase:
 class PipelineMainContent(PipelineBase):
     def __init__(self):
         super().__init__()
+        self.pat_remove_url = re.compile(r'\[.*\]\([^)]+\)', re.MULTILINE)
+        
 
-    def convert_resp_to_page(self, resp):
+    def convert_resp_to_page(self, resp: ResponseItem):
         item = PageItem()
 
         item.url = resp.url
         item.depth_from_root = resp.depth_from_root
-
-        parser = HtmlParser(resp.html)
-
-        item.title = parser.get_title()
-        item.domain = get_domain(item.url)
-        item.body = parser.get_main_content()
+        
+        html = trafilatura.load_html(
+            resp.html
+        )
+        
         item.a = []
-        for href in parser.get_hrefs():
-            if not href:
-                continue
-            item.a.append(urljoin(item.url, href))
+        for h in html.iterlinks():
+            url = h[2]
+            if url.startswith('http'):
+                item.a.append(url)
+            elif url.startswith('/'):
+                item.a.append(urljoin(item.url, url))
+        parsed_page = trafilatura.bare_extraction(
+            html
+        )
+        
+        item.title = parsed_page['title']
+        item.domain = get_domain(item.url)
+        item.body = parsed_page['text']
+        
         return item
 
 

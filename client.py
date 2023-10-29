@@ -9,6 +9,8 @@ import aiohttp
 from item import PageItem, ResponseItem
 from pipelines import PipelineToDB, PipelineMainContent
 from utils.url_pool import UrlPool
+from fake_useragent import UserAgent
+from urllib.parse import urlparse
 
 
 class Crawler:
@@ -27,6 +29,7 @@ class Crawler:
 
         self.allow_domain = allow_domain
         self.cnt_request = 0
+        self.rand_ua = UserAgent("chrome")
 
         for pipeline in self.pipelines:
             pipeline.open_spider()
@@ -100,16 +103,20 @@ class Crawler:
         if not self.allow_domain:
             return True
         fl = False
+        
+        first_href = urlparse(href).netloc
         for domain in self.allow_domain:
-            if domain in href:
+            if domain in first_href:
                 fl = True
                 break
         for file_type in [
-                '.mpg', '.wmv', '.mov', '.jpg', '.avi', '.MPG', '.rmvb', '.jpeg', '.png'
+                '.mpg', '.wmv', '.mov', '.jpg', '.avi', '.rmvb', '.jpeg', '.png', '.js', '.css', '.gif', '.zip', '.pdf', 'docx', '.doc', 'xls', 'xlsx', '.mp3', '.wav'
         ]:
-            if file_type in domain:
-                fl = False
-
+            # if href.lower().endswith(file_type):
+            if file_type in href.lower():
+                return False
+        if '/search' in href:
+            return False
         return fl
 
     @staticmethod
@@ -142,9 +149,9 @@ class Crawler:
         Returns:
             item.ResponseItem()
         """
+        ua = self.rand_ua.random
         headers = {
-            'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+            'User-Agent': ua
         }
         item = ResponseItem()
         item.url = url
@@ -155,6 +162,7 @@ class Crawler:
                 item.resp_code = resp.status
         except Exception as e:
             item.drop = True
+            print(e)
             self.logger.warning(f"url: {url} Error:{e}")
 
         return item
@@ -168,19 +176,31 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--server', type=str, default='http://localhost:8087')
     parser.add_argument('--cli_id', type=str, default='cli1')
+    
     args = parser.parse_args()
 
     resp = requests.get(urljoin(args.server,
                                 f'/register/{args.cli_id}')).json()
     crawler = Crawler(pipelines=[PipelineMainContent()],
-                      allow_domain=None,
+                      allow_domain=['www.taiwannews.com.tw', 
+                                    'english.ftvnews.com.tw', 
+                                    'icrt.com.tw',
+                                    'eslite.com',
+                                    'features.ltn.com.tw/english',
+                                    'www.taipeitimes.com',
+                                    'gnn.gamer.com.tw',
+                                    'acg.gamer.com.tw'],
                       max_thread=10)
     while True:
         urls = requests.get(urljoin(args.server, f'fetchurls/{args.cli_id}'),
                             params={
                                 'num': 100
                             }).json()['urls']
+        if len(urls) == 0:
+            print('no url in queue.')
+            break
         crawled_urls, crawled_pages = crawler.start_batch(urls)
+        print('url in queue: ', requests.get(urljoin(args.server, f'/url-in-queue-num')).json()['nums'])
         requests.post(urljoin(args.server, f'/save/{args.cli_id}'),
                         json={
                             'crawled_urls': crawled_urls,

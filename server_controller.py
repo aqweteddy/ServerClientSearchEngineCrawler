@@ -47,7 +47,7 @@ class ClientQueue:
         return urls
 
     def __len__(self):
-        return len(self.url_queue)
+        return len(self.url_queue) + len(self.cold_queue)
 
     def __repr__(self) -> str:
         result = f'numbers of url: {len(self.url_queue)}\n'
@@ -64,6 +64,7 @@ class ServerController:
         self.bf = BloomFilter(max_elements=10**8, error_rate=0.01)
         self.tmp_result = []
         self.crawled_num = 0
+        self.file_list = []
 
     def add_client(self, cli_id: str):
         if cli_id not in self.clients_que.keys():
@@ -101,7 +102,6 @@ class ServerController:
         self.tmp_result.extend(content)
 
         if len(self.tmp_result) > 100:
-            print('write')
             with jsonlines.open('db.jsonl', 'a') as f:
                 for t in self.tmp_result:
                     f.write(t)

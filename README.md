@@ -10,6 +10,7 @@ NTU HPC 2022 Final Project
 ```bash
 git clone https://github.com/aqweteddy/ServerClientSearchEngineCrawler.git
 conda activate <env name>
+pip install --no-binary lxml html5-parser
 pip install -r requirements.txt
 ```
 

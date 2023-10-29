@@ -6,9 +6,13 @@ from server_controller import ServerController
 
 app = FastAPI()
 SEEDS_URLS = [
-    "https://stackoverflow.com/", "https://dcard.tw",
-    "https://www.msn.com/zh-tw/news", "https://www.ptt.cc/bbs/index.html",
-    "https://www.gamer.com.tw/"
+    "https://www.gamer.com.tw/",
+    # "https://english.ftvnews.com.tw/",
+    "https://www.taiwannews.com.tw/en/index",
+    'https://www.icrt.com.tw/',
+    'https://features.ltn.com.tw/english',
+    'https://www.taipeitimes.com/',
+    'https://acg.gamer.com.tw/anime/'
 ]
 controller = ServerController(SEEDS_URLS, "")
 start_time = time.time()
@@ -48,7 +52,7 @@ def client_num():
 
 @app.get('/url-in-queue-num')  # numbers of urls in queue
 def url_in_queue():
-    num = sum(map(lambda x: len(x), controller.clients_que))
+    num = sum(map(lambda x: len(x), controller.clients_que.values()))
     return {
         "status": "ok",
         "nums": num
