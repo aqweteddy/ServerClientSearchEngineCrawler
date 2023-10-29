@@ -181,6 +181,7 @@ if __name__ == '__main__':
 
     resp = requests.get(urljoin(args.server,
                                 f'/register/{args.cli_id}')).json()
+    print(resp)
     crawler = Crawler(pipelines=[PipelineMainContent()],
                       allow_domain=['www.taiwannews.com.tw', 
                                     'english.ftvnews.com.tw', 

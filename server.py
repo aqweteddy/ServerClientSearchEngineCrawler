@@ -6,7 +6,7 @@ from server_controller import ServerController
 
 app = FastAPI()
 SEEDS_URLS = [
-    "https://www.gamer.com.tw/",
+    # "https://www.gamer.com.tw/",
     # "https://english.ftvnews.com.tw/",
     "https://www.taiwannews.com.tw/en/index",
     'https://www.icrt.com.tw/',

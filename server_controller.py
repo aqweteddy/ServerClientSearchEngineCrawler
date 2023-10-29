@@ -75,6 +75,14 @@ class ServerController:
             for url in self.init_urls:
                 self.clients_que[cli_id].add(url,
                                             get_domain(url), 0)
+        else:
+            # add some url to new client
+            qued_urls = list(self.clients_que.values())[0].get_urls(100)
+            for url in qued_urls:
+                self.clients_que[cli_id].add(
+                    url, get_domain(url), 0
+                )
+            
 
     def add_urls(self, urls: List[str]):
         for url in urls:
